@@ -104,7 +104,7 @@ index f9275a4..f375f4c 100644
  	//? Contains the valid sorting options for processes
  	const vector<string> sort_vector = {
 diff --git a/src/linux/btop_collect.cpp b/src/linux/btop_collect.cpp
-index 62a5c62..3717c4c 100644
+index 8be5dc7..e7b33c7 100644
 --- a/src/linux/btop_collect.cpp
 +++ b/src/linux/btop_collect.cpp
 @@ -95,7 +95,7 @@ namespace Mem {
@@ -136,7 +136,7 @@ index 62a5c62..3717c4c 100644
  }
  
  namespace Cpu {
-@@ -1809,8 +1810,8 @@ namespace Proc {
+@@ -1812,8 +1813,8 @@ namespace Proc {
  					long_string.clear();
  					while(getline(pread, long_string, '\0')) {
  						new_proc.cmd += long_string + ' ';

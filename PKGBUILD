@@ -25,7 +25,6 @@ prepare() {
   cd "${pkgname}"
 
   # Patches
-  patch --forward --strip=1 --input="${startdir}/fix-ambiguous-format-call.patch"
   patch --forward --strip=1 --input="${startdir}/feat-copy-cmd.patch"
 }
 
