@@ -37,12 +37,12 @@ prepare() {
 build() {
   cd "${pkgname}"
 
-  make STATIC=true
+  make PLATFORM=linux STATIC=true
 }
 
 package() {
   cd "${srcdir}/${pkgname}"
-  DESTDIR="${pkgdir}" make PREFIX=/usr install
+  DESTDIR="${pkgdir}" make PREFIX=/usr PLATFORM=linux install
 
   install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
