@@ -1,7 +1,7 @@
 # Maintainer: Vladislav Nepogodin <nepogodin.vlad@gmail.com>
 
 pkgname=btop-git
-pkgver=1.0.18.r292.a0ee404
+pkgver=1.2.13.r678.bab441e
 pkgrel=1
 pkgdesc="A monitor of resources"
 arch=(any)
@@ -19,6 +19,14 @@ pkgver() {
   _pkgver="$(cat CHANGELOG.md | grep '^##' | sed 's/## v//g' | head -1)"
 
   printf "${_pkgver}.r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd "${pkgname}"
+
+  # Patches
+  patch --forward --strip=1 --input="${startdir}/fix-ambiguous-format-call.patch"
+  patch --forward --strip=1 --input="${startdir}/feat-copy-cmd.patch"
 }
 
 build() {
