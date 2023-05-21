@@ -29,6 +29,9 @@ prepare() {
   git submodule init
   git config submodule."lib/fmt".url "${srcdir}/fmt"
   git -c protocol.file.allow=always submodule update
+
+  # Patches
+  patch --forward --strip=1 --input="${startdir}/feat-copy-cmd.patch"
 }
 
 build() {
