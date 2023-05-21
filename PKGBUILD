@@ -39,12 +39,12 @@ prepare() {
 build() {
   cd "${pkgname}"
 
-  make GPU_SUPPORT=true RSMI_STATIC=false
+  make PLATFORM=linux GPU_SUPPORT=true RSMI_STATIC=false
 }
 
 package() {
   cd "${srcdir}/${pkgname}"
-  DESTDIR="${pkgdir}" make PREFIX=/usr install
+  DESTDIR="${pkgdir}" make PREFIX=/usr PLATFORM=linux install
 
   install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
