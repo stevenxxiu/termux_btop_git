@@ -1,6 +1,6 @@
 pkgbase = btop-git
 	pkgdesc = A monitor of resources
-	pkgver = 1.0.18.r292.a0ee404
+	pkgver = 1.2.13.r689.4689938
 	pkgrel = 1
 	url = https://github.com/aristocratos/btop
 	arch = any
@@ -11,7 +11,9 @@ pkgbase = btop-git
 	provides = btop
 	conflicts = btop
 	options = !strip
-	source = btop-git::git+https://github.com/aristocratos/btop.git
+	source = mirrors/btop::git+https://github.com/aristocratos/btop.git
+	source = mirrors/fmt::git+https://github.com/fmtlib/fmt.git
+	sha512sums = SKIP
 	sha512sums = SKIP
 
 pkgname = btop-git
