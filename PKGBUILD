@@ -6,7 +6,7 @@ pkgrel=1
 pkgdesc="A monitor of resources"
 arch=(x86_64)
 url="https://github.com/aristocratos/btop"
-license=('Apache-2.0')
+license=(Apache)
 depends=('gcc-libs')
 makedepends=('gcc' 'make' 'lowdown' 'git')
 optdepends=(
@@ -44,7 +44,5 @@ build() {
 
 package() {
   cd "${srcdir}/${pkgname}"
-  DESTDIR="${pkgdir}" make PREFIX=/usr PLATFORM=linux install
-
-  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  make DESTDIR="$pkgdir" PREFIX=/usr install
 }
