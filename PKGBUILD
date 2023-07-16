@@ -1,12 +1,12 @@
 # Maintainer: Vladislav Nepogodin <nepogodin.vlad@gmail.com>
 
 pkgname=btop-git
-pkgver=1.2.13.r772.0267eba
+pkgver=1.2.13.r705.7e50b03
 pkgrel=1
 pkgdesc="A monitor of resources"
 arch=(any)
 url="https://github.com/aristocratos/btop"
-license=('Apache-2.0')
+license=(Apache)
 makedepends=('gcc' 'make' 'git')
 source=("${pkgname}::git+https://github.com/aristocratos/btop.git"
         "git+https://github.com/fmtlib/fmt.git")
@@ -36,13 +36,10 @@ prepare() {
 
 build() {
   cd "${pkgname}"
-
-  make PLATFORM=linux STATIC=true
+  make all
 }
 
 package() {
   cd "${srcdir}/${pkgname}"
-  DESTDIR="${pkgdir}" make PREFIX=/usr PLATFORM=linux install
-
-  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  make DESTDIR="$pkgdir" PREFIX=/usr install
 }
