@@ -1,7 +1,7 @@
 # Maintainer: Vladislav Nepogodin <nepogodin.vlad@gmail.com>
 
 pkgname=btop-git
-pkgver=1.2.13.r705.7e50b03
+pkgver=1.2.13.r715.ac17f34
 pkgrel=1
 pkgdesc="A monitor of resources"
 arch=(any)
@@ -15,6 +15,12 @@ sha512sums=('SKIP'
 provides=('btop')
 conflicts=('btop')
 options=(!strip)
+
+if [ -z "$TERMUX" ]; then
+  TERMUX_ROOT=''
+else
+  TERMUX_ROOT='/data/data/com.termux/files'
+fi
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
@@ -32,14 +38,40 @@ prepare() {
 
   # Patches
   patch --forward --strip=1 --input="${startdir}/feat-copy-cmd.patch"
+  if [ -n "$TERMUX" ]; then
+    patch --forward --strip=1 --input="${startdir}/pthread.patch"
+  fi
 }
 
 build() {
   cd "${pkgname}"
-  make all
+  if [ -z "$TERMUX" ]; then
+    make all
+  else
+    export PATH="/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
+
+    export CXXFLAGS=''
+    CXXFLAGS+=' -fstack-protector-strong'
+    CXXFLAGS+=' -Oz'
+    CXXFLAGS+=" -I${TERMUX_PREFIX}/include"
+
+    export LDFLAGS="-Wl,-rpath=${TERMUX_ROOT}/usr/lib,--enable-new-dtags"
+
+    make \
+      DESTDIR="${pkgdir}${TERMUX_ROOT}" \
+      ARCH=arm64 \
+      CXX=aarch64-linux-android34-clang++ \
+      PLATFORM=linux \
+      all
+  fi
 }
 
 package() {
   cd "${srcdir}/${pkgname}"
-  make DESTDIR="$pkgdir" PREFIX=/usr install
+  make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr install
+
+  if [ -n "$TERMUX" ]; then
+    rm -rf ${pkgdir}${TERMUX_ROOT}/usr/share/applications/
+    rm -rf ${pkgdir}${TERMUX_ROOT}/usr/share/icons/
+  fi
 }
