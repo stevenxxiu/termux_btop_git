@@ -18,6 +18,12 @@ sha512sums=('SKIP')
 provides=('btop')
 conflicts=('btop')
 
+if [ -z "$TERMUX" ]; then
+  TERMUX_ROOT=''
+else
+  TERMUX_ROOT='/data/data/com.termux/files'
+fi
+
 pkgver() {
   cd "${srcdir}/${pkgname}"
   _pkgver="$(cat CHANGELOG.md | grep '^##' | sed 's/## v//g' | head -1)"
@@ -34,15 +40,41 @@ prepare() {
 
   # Patches
   patch --forward --strip=1 --input="${startdir}/feat-copy-cmd.patch"
+  if [ -n "$TERMUX" ]; then
+    patch --forward --strip=1 --input="${startdir}/pthread.patch"
+  fi
 }
 
 build() {
   cd "${pkgname}"
-
+  if [ -z "$TERMUX" ]; then
   make PLATFORM=linux GPU_SUPPORT=true RSMI_STATIC=false
+    make all
+  else
+    export PATH="/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
+
+    export CXXFLAGS=''
+    CXXFLAGS+=' -fstack-protector-strong'
+    CXXFLAGS+=' -Oz'
+    CXXFLAGS+=" -I${TERMUX_PREFIX}/include"
+
+    export LDFLAGS="-Wl,-rpath=${TERMUX_ROOT}/usr/lib,--enable-new-dtags"
+
+    make \
+      DESTDIR="${pkgdir}${TERMUX_ROOT}" \
+      ARCH=arm64 \
+      CXX=aarch64-linux-android34-clang++ \
+      PLATFORM=linux \
+      all
+  fi
 }
 
 package() {
   cd "${srcdir}/${pkgname}"
-  make DESTDIR="$pkgdir" PREFIX=/usr install
+  make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr install
+
+  if [ -n "$TERMUX" ]; then
+    rm -rf ${pkgdir}${TERMUX_ROOT}/usr/share/applications/
+    rm -rf ${pkgdir}${TERMUX_ROOT}/usr/share/icons/
+  fi
 }
