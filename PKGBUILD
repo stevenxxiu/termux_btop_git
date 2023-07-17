@@ -46,7 +46,7 @@ prepare() {
 build() {
   cd "${pkgname}"
   if [ -z "$TERMUX" ]; then
-    make all
+    make PLATFORM=linux all
   else
     export PATH="/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
 
@@ -68,7 +68,7 @@ build() {
 
 package() {
   cd "${srcdir}/${pkgname}"
-  make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr install
+  make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr PLATFORM=linux install
 
   if [ -n "$TERMUX" ]; then
     rm -rf ${pkgdir}${TERMUX_ROOT}/usr/share/applications/
