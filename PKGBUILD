@@ -71,8 +71,8 @@ build() {
 
 package() {
   cd "${srcdir}/${pkgname}"
-  make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr install
-  make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr setcap
+  make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr PLATFORM=linux install
+  make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr PLATFORM=linux setcap
 
   if [ -n "$TERMUX" ]; then
     rm -rf ${pkgdir}${TERMUX_ROOT}/usr/share/applications/
