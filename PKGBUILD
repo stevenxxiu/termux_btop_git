@@ -50,8 +50,6 @@ build() {
   if [ -z "$TERMUX" ]; then
     make PLATFORM=linux GPU_SUPPORT=true RSMI_STATIC=false
   else
-    export PATH="/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
-
     export CXXFLAGS=''
     CXXFLAGS+=' -fstack-protector-strong'
     CXXFLAGS+=' -Oz'
