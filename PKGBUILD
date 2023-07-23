@@ -48,8 +48,6 @@ build() {
   if [ -z "$TERMUX" ]; then
     make PLATFORM=linux all
   else
-    export PATH="/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
-
     export CXXFLAGS=''
     CXXFLAGS+=' -fstack-protector-strong'
     CXXFLAGS+=' -Oz'
