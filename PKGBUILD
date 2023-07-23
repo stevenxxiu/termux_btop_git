@@ -51,8 +51,6 @@ build() {
     make PLATFORM=linux GPU_SUPPORT=true RSMI_STATIC=false
     make all
   else
-    export PATH="/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
-
     export CXXFLAGS=''
     CXXFLAGS+=' -fstack-protector-strong'
     CXXFLAGS+=' -Oz'
