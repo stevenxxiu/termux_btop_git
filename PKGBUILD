@@ -71,8 +71,13 @@ build() {
 
 package() {
   cd "${srcdir}/${pkgname}"
-  make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr PLATFORM=linux install
-  make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr PLATFORM=linux setcap
+  if [ -z "$TERMUX" ]; then
+    make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr PLATFORM=linux install
+    make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr PLATFORM=linux setcap
+  else
+    make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr CXX=aarch64-linux-android34-clang++ PLATFORM=linux install
+    make DESTDIR="${pkgdir}${TERMUX_ROOT}" PREFIX=/usr CXX=aarch64-linux-android34-clang++ PLATFORM=linux setcap
+  fi
 
   if [ -n "$TERMUX" ]; then
     rm -rf ${pkgdir}${TERMUX_ROOT}/usr/share/applications/
