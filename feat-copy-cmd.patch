@@ -36,7 +36,7 @@ index 6ddfd43..3233aad 100644
  				ints.at("proc_selected") = Proc::selected;
  				ints.at("selected_depth") = Proc::selected_depth;
 diff --git a/src/btop_draw.cpp b/src/btop_draw.cpp
-index 97195f1..587d26c 100644
+index 97195f1..865a264 100644
 --- a/src/btop_draw.cpp
 +++ b/src/btop_draw.cpp
 @@ -1462,6 +1462,7 @@ namespace Proc {
@@ -51,7 +51,7 @@ index 97195f1..587d26c 100644
  				mouse_x += 6;
  			}
  			out += title_left_down + Fx::b + hi_color + 's' + t_color + "ignals" + Fx::ub + title_right_down;
-+			out += title_left_down + Fx::b + t_color + "copy cmd" + Fx::b + hi_color + " x" + t_color + Fx::ub + title_right_down;
++			out += title_left_down + Fx::b + t_color + "copy cmd" + Fx::b + hi_color + " y" + t_color + Fx::ub + title_right_down;
  			if (selected > 0) Input::mouse_mappings["s"] = {y + height - 1, mouse_x, 1, 7};
  
  			//? Labels for fields in list
@@ -64,14 +64,14 @@ index 97195f1..587d26c 100644
  			}
  
 diff --git a/src/btop_input.cpp b/src/btop_input.cpp
-index fb9e46d..234b7aa 100644
+index fb9e46d..82cc246 100644
 --- a/src/btop_input.cpp
 +++ b/src/btop_input.cpp
 @@ -463,6 +463,22 @@ namespace Input {
  					else if (old_selected != new_selected and (old_selected == 0 or new_selected == 0))
  						redraw = true;
  				}
-+				else if (key == "x") {
++				else if (key == "y") {
 +					atomic_wait(Runner::active);
 +
 +					auto copy_command = Config::getS("copy_command");
