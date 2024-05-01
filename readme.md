@@ -8,7 +8,7 @@ To build:
 To build:
 
     $ cd build_env/
-    $ ./build.nu ../packages/btop-git/
+    $ ./build.nu __PATH_TO__/btop-git/
 
 In *Docker*:
 
