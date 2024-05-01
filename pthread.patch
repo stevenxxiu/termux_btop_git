@@ -1,9 +1,9 @@
 diff --git a/src/btop.cpp b/src/btop.cpp
-index 552adae..04e33c9 100644
+index 8eae107..6c33b61 100644
 --- a/src/btop.cpp
 +++ b/src/btop.cpp
-@@ -240,6 +240,8 @@ void term_resize(bool force) {
- 	Input::interrupt = true;
+@@ -287,6 +287,8 @@ void term_resize(bool force) {
+ 	Input::interrupt();
  }
  
 +static std::atomic_flag prunner_thread_cancel;
@@ -11,13 +11,13 @@ index 552adae..04e33c9 100644
  //* Exit handler; stops threads, restores terminal and saves config changes
  void clean_quit(int sig) {
  	if (Global::quitting) return;
-@@ -252,12 +254,8 @@ void clean_quit(int sig) {
+@@ -299,12 +301,8 @@ void clean_quit(int sig) {
  			pthread_cancel(Runner::runner_id);
  		}
  	#else
 -		struct timespec ts;
 -		ts.tv_sec = 5;
--		if (pthread_timedjoin_np(Runner::runner_id, NULL, &ts) != 0) {
+-		if (pthread_timedjoin_np(Runner::runner_id, nullptr, &ts) != 0) {
 -			Logger::warning("Failed to join _runner thread on exit!");
 -			pthread_cancel(Runner::runner_id);
 -		}
@@ -26,12 +26,12 @@ index 552adae..04e33c9 100644
  	#endif
  	}
  
-@@ -668,7 +666,7 @@ namespace Runner {
+@@ -812,7 +810,7 @@ namespace Runner {
  			Logger::error("Stall in Runner thread, restarting!");
  			active = false;
  			// exit(1);
 -			pthread_cancel(Runner::runner_id);
 +			atomic_flag_test_and_set(&prunner_thread_cancel);
- 			if (pthread_create(&Runner::runner_id, NULL, &Runner::_runner, NULL) != 0) {
+ 			if (pthread_create(&Runner::runner_id, nullptr, &Runner::_runner, nullptr) != 0) {
  				Global::exit_error_msg = "Failed to re-create _runner thread!";
  				clean_quit(1);
