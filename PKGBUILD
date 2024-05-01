@@ -1,13 +1,17 @@
 # Maintainer: Vladislav Nepogodin <nepogodin.vlad@gmail.com>
 
 pkgname=btop-git
-pkgver=1.3.2.r1032.d168073
+pkgver=1.3.2.r1048.b48bf6a
 pkgrel=1
 pkgdesc="A monitor of resources"
-arch=(x86_64)
+arch=(x86_64 aarch64)
 url="https://github.com/aristocratos/btop"
 license=(Apache)
-depends=('gcc-libs')
+if [ -z "$TERMUX" ]; then
+  depends=('gcc-libs')
+else
+  depends=()
+fi
 makedepends=('gcc' 'make' 'lowdown' 'git')
 optdepends=(
   'nvidia-utils: NVIDIA GPU support'
