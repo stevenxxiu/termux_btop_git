@@ -1,7 +1,7 @@
 # Maintainer: Vladislav Nepogodin <nepogodin.vlad@gmail.com>
 
 pkgname=btop-git
-pkgver=1.3.2.r1032.d168073
+pkgver=1.4.4.r1292.bdddfc4
 pkgrel=1
 pkgdesc="A monitor of resources"
 arch=(x86_64)
@@ -34,8 +34,7 @@ build() {
 package() {
   cd "${srcdir}/${pkgname}"
   DESTDIR="${pkgdir}" make PREFIX=/usr install
-
-  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  DESTDIR="${pkgdir}" make PREFIX=/usr setcap
 }
 
 # vim:set sw=2 sts=2 et:
