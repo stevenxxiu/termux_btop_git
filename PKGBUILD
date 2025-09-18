@@ -1,7 +1,7 @@
 # Maintainer: Vladislav Nepogodin <nepogodin.vlad@gmail.com>
 
 pkgname=btop-git
-pkgver=1.4.4.r1292.bdddfc4
+pkgver=1.4.4.r1293.21ca909
 pkgrel=1
 pkgdesc="A monitor of resources"
 arch=(x86_64 aarch64)
@@ -53,7 +53,6 @@ build() {
   cd "${pkgname}"
   if [ -z "$TERMUX" ]; then
     make PLATFORM=linux GPU_SUPPORT=true RSMI_STATIC=false
-    make all
   else
     export CXXFLAGS=''
     CXXFLAGS+=' -fstack-protector-strong'
@@ -66,8 +65,7 @@ build() {
       DESTDIR="${pkgdir}${TERMUX_ROOT}" \
       ARCH=arm64 \
       CXX=aarch64-linux-android34-clang++ \
-      PLATFORM=linux \
-      all
+      PLATFORM=linux
   fi
 }
 
