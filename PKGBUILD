@@ -1,7 +1,7 @@
 # Maintainer: Vladislav Nepogodin <nepogodin.vlad@gmail.com>
 
 pkgname=btop-git
-pkgver=1.4.4.r1293.21ca909
+pkgver=1.4.5.r1331.f8b4217
 pkgrel=1
 pkgdesc="A monitor of resources"
 arch=(x86_64 aarch64)
