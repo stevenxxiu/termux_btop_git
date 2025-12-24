@@ -1,8 +1,8 @@
 diff --git a/src/btop_config.cpp b/src/btop_config.cpp
-index 4c33655..183a894 100644
+index 37d614e..cc2502f 100644
 --- a/src/btop_config.cpp
 +++ b/src/btop_config.cpp
-@@ -69,6 +69,8 @@ namespace Config {
+@@ -71,6 +71,8 @@ namespace Config {
  		{"vim_keys",			"#* Set to True to enable \"h,j,k,l,g,G\" keys for directional control in lists.\n"
  								"#* Conflicting keys for h:\"help\" and k:\"kill\" is accessible while holding shift."},
  
@@ -10,8 +10,8 @@ index 4c33655..183a894 100644
 +
  		{"rounded_corners",		"#* Rounded corners on boxes, is ignored if TTY mode is ON."},
  
- 		{"graph_symbol", 		"#* Default symbols to use for graph creation, \"braille\", \"block\" or \"tty\".\n"
-@@ -234,6 +236,7 @@ namespace Config {
+ 		{"terminal_sync", 		"#* Use terminal synchronized output sequences to reduce flickering on supported terminals."},
+@@ -240,6 +242,7 @@ namespace Config {
  		{"shown_boxes", "cpu mem net proc"},
  		{"graph_symbol", "braille"},
  		{"presets", "cpu:1:default,proc:0:default cpu:0:default,mem:0:default,net:0:default cpu:0:block,net:0:tty"},
@@ -19,7 +19,7 @@ index 4c33655..183a894 100644
  		{"graph_symbol_cpu", "default"},
  		{"graph_symbol_gpu", "default"},
  		{"graph_symbol_mem", "default"},
-@@ -259,6 +262,7 @@ namespace Config {
+@@ -265,6 +268,7 @@ namespace Config {
  		{"proc_filter", ""},
  		{"proc_command", ""},
  		{"selected_name", ""},
@@ -27,7 +27,7 @@ index 4c33655..183a894 100644
  	#ifdef GPU_SUPPORT
  		{"custom_gpu_name0", ""},
  		{"custom_gpu_name1", ""},
-@@ -630,6 +634,7 @@ namespace Config {
+@@ -639,6 +643,7 @@ namespace Config {
  			if (Proc::shown) {
  				ints.at("selected_pid") = Proc::selected_pid;
  				strings.at("selected_name") = Proc::selected_name;
@@ -36,18 +36,18 @@ index 4c33655..183a894 100644
  				ints.at("proc_selected") = Proc::selected;
  				ints.at("selected_depth") = Proc::selected_depth;
 diff --git a/src/btop_draw.cpp b/src/btop_draw.cpp
-index f8557d0..1c908ba 100644
+index 54a51d9..fdf1966 100644
 --- a/src/btop_draw.cpp
 +++ b/src/btop_draw.cpp
-@@ -1515,6 +1515,7 @@ namespace Proc {
- 	bool shown = true, redraw = true;
+@@ -1535,6 +1535,7 @@ namespace Proc {
  	int selected_pid = 0, selected_depth = 0;
+ 	int scroll_pos;
  	string selected_name;
 +	string selected_cmd;
  	std::unordered_map<size_t, Draw::Graph> p_graphs;
  	std::unordered_map<size_t, bool> p_wide_cmd;
  	std::unordered_map<size_t, int> p_counters;
-@@ -1769,6 +1770,7 @@ namespace Proc {
+@@ -1789,6 +1790,7 @@ namespace Proc {
  				mouse_x += 6;
  			}
  			out += title_left_down + Fx::b + hi_color + 's' + t_color + "ignals" + Fx::ub + title_right_down;
@@ -55,7 +55,7 @@ index f8557d0..1c908ba 100644
  			if (selected > 0) Input::mouse_mappings["s"] = {y + height - 1, mouse_x, 1, 7};
  		    mouse_x += 9;
  		    out += title_left_down + Fx::b + hi_color + 'N' + t_color + "ice" + Fx::ub + title_right_down;
-@@ -1849,6 +1851,7 @@ namespace Proc {
+@@ -1869,6 +1871,7 @@ namespace Proc {
  			if (is_selected) {
  				selected_pid = (int)p.pid;
  				selected_name = p.name;
@@ -64,10 +64,10 @@ index f8557d0..1c908ba 100644
  			}
  
 diff --git a/src/btop_input.cpp b/src/btop_input.cpp
-index 09618d9..9fedb6c 100644
+index de6abfd..41ca224 100644
 --- a/src/btop_input.cpp
 +++ b/src/btop_input.cpp
-@@ -438,6 +438,22 @@ namespace Input {
+@@ -456,6 +456,22 @@ namespace Input {
  					else if (old_selected != new_selected and (old_selected == 0 or new_selected == 0))
  						redraw = true;
  				}
@@ -91,23 +91,23 @@ index 09618d9..9fedb6c 100644
  
  				if (not keep_going) {
 diff --git a/src/btop_shared.hpp b/src/btop_shared.hpp
-index 487d9e0..23503df 100644
+index e18f4b2..60aac5a 100644
 --- a/src/btop_shared.hpp
 +++ b/src/btop_shared.hpp
-@@ -350,7 +350,7 @@ namespace Proc {
- 	extern int select_max;
+@@ -355,7 +355,7 @@ namespace Proc {
  	extern atomic<int> detailed_pid;
  	extern int selected_pid, start, selected, collapse, expand, filter_found, selected_depth, toggle_children;
+ 	extern int scroll_pos;
 -	extern string selected_name;
 +	extern string selected_name, selected_cmd;
  
  	//? Contains the valid sorting options for processes
  	const vector<string> sort_vector = {
 diff --git a/src/linux/btop_collect.cpp b/src/linux/btop_collect.cpp
-index 361edff..c93605f 100644
+index eebaa50..e269102 100644
 --- a/src/linux/btop_collect.cpp
 +++ b/src/linux/btop_collect.cpp
-@@ -254,7 +254,7 @@ namespace Mem {
+@@ -260,7 +260,7 @@ namespace Mem {
  namespace Shared {
  
  	fs::path procPath, passwd_path;
@@ -116,7 +116,7 @@ index 361edff..c93605f 100644
  
  	void init() {
  
-@@ -288,6 +288,9 @@ namespace Shared {
+@@ -294,6 +294,9 @@ namespace Shared {
  			Logger::warning("Could not get system clock ticks per second. Defaulting to 100, processes cpu usage might be incorrect.");
  		}
  
@@ -126,7 +126,7 @@ index 361edff..c93605f 100644
  		//? Init for namespace Cpu
  		Cpu::current_cpu.core_percent.insert(Cpu::current_cpu.core_percent.begin(), Shared::coreCount, {});
  		Cpu::current_cpu.temp.insert(Cpu::current_cpu.temp.begin(), Shared::coreCount + 1, {});
-@@ -2968,8 +2971,8 @@ namespace Proc {
+@@ -3020,8 +3023,8 @@ namespace Proc {
  					long_string.clear();
  					while(getline(pread, long_string, '\0')) {
  						new_proc.cmd += long_string + ' ';
@@ -138,10 +138,10 @@ index 361edff..c93605f 100644
  						}
  					}
 diff --git a/src/osx/btop_collect.cpp b/src/osx/btop_collect.cpp
-index 1043e02..b38c9f2 100644
+index 0e3cab5..d043060 100644
 --- a/src/osx/btop_collect.cpp
 +++ b/src/osx/btop_collect.cpp
-@@ -1204,7 +1204,7 @@ namespace Proc {
+@@ -1219,7 +1219,7 @@ namespace Proc {
  								std::string_view proc_args(proc_chars.get(), argmax);
  								if (size_t null_pos = proc_args.find('\0', sizeof(argc)); null_pos != string::npos) {
  									if (size_t start_pos = proc_args.find_first_not_of('\0', null_pos); start_pos != string::npos) {
@@ -150,7 +150,7 @@ index 1043e02..b38c9f2 100644
  											null_pos = proc_args.find('\0', start_pos);
  											new_proc.cmd += (string)proc_args.substr(start_pos, null_pos - start_pos) + ' ';
  											start_pos = null_pos + 1;
-@@ -1215,8 +1215,8 @@ namespace Proc {
+@@ -1230,8 +1230,8 @@ namespace Proc {
  							}
  						}
  						if (new_proc.cmd.empty()) new_proc.cmd = f_name;
